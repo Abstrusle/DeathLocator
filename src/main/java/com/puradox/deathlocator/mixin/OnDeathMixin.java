@@ -3,6 +3,8 @@ package com.puradox.deathlocator.mixin;
 import com.mojang.authlib.GameProfile;
 import com.puradox.deathlocator.ClientPlayerEntityAccess;
 import com.puradox.deathlocator.DeathLocator;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.hud.DebugHud;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
@@ -32,7 +34,7 @@ public abstract class OnDeathMixin extends AbstractClientPlayerEntity implements
 	protected void updateHealth(float health, CallbackInfo ci) {
 		if (this.getHealth() <= 0) {
 			DeathLocator.setDespawnTicksRemaining(6000);
-			DeathLocator.setActiveDeath((int)lastX, (int)lastBaseY, (int)lastZ);
+			DeathLocator.setActiveDeath((int)lastX, (int)lastBaseY, (int)lastZ, this.world.getRegistryKey());
 		}
 	}
 }

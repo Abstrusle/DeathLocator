@@ -6,6 +6,9 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.Option;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.dimension.DimensionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +24,7 @@ public class DeathLocator implements ModInitializer {
 	private static int deathY;
 	private static int deathZ;
 	private static int deathChunkZ;
+	private static RegistryKey deathDimension;
 
 	public static int despawnTicksRemaining = 0;
 	public static boolean isPlayerInDeathRange;
@@ -36,10 +40,12 @@ public class DeathLocator implements ModInitializer {
 		// Proceed with mild caution.
 	}
 
-	public static void setActiveDeath(int x, int y, int z) {
+	public static void setActiveDeath(int x, int y, int z, RegistryKey dimension) {
 		deathX = x;
 		deathY = y;
 		deathZ = z;
+
+		deathDimension = dimension;
 
 		deathChunkX = deathX/16;
 		deathChunkZ = deathZ/16;
@@ -57,7 +63,7 @@ public class DeathLocator implements ModInitializer {
 
 	public static String getUpdatedActiveDeath() {
 		if (despawnTicksRemaining==0 || isPlayerNearItems) {activeDeath = "";}
-		return new String(activeDeath);
+		return activeDeath;
 	}
 
 	public static int getUpdatedTextColour() {
@@ -76,9 +82,8 @@ public class DeathLocator implements ModInitializer {
 		int serverViewDistance = ((GameOptionsAccess)options).getServerViewDistance(); //Usually 10 for servers. Be sure client render distance is set to this amount.
 		int currentChunkX = (int)(((ClientPlayerEntityAccess)thisPlayer).getLastX())/16;
 		int currentChunkZ = (int)(((ClientPlayerEntityAccess)thisPlayer).getLastZ())/16;
-		if (currentChunkX==deathChunkX&&currentChunkZ==deathChunkZ && !thisPlayer.isDead()) {isPlayerNearItems=true;}
-		else {isPlayerNearItems=false;}
-		if (Math.abs(currentChunkX-deathChunkX)<serverViewDistance && Math.abs(currentChunkZ-deathChunkZ)<serverViewDistance) {
+		isPlayerNearItems = thisPlayer.world.getRegistryKey().equals(deathDimension) && currentChunkX == deathChunkX && currentChunkZ == deathChunkZ && !thisPlayer.isDead();
+		if (thisPlayer.world.getRegistryKey().equals(deathDimension) && Math.abs(currentChunkX-deathChunkX)<serverViewDistance && Math.abs(currentChunkZ-deathChunkZ)<serverViewDistance) {
 			isPlayerInDeathRange = true;
 			return;
 		}
