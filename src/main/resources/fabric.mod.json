@@ -6,11 +6,11 @@
   "name": "Death Locator",
   "description": "Pins death location to the player's screen.",
   "authors": [
-    "Pure Paradox"
+    "Pure Paradox/Abstruse Paradox/Abstrusle"
   ],
 
   "license": "CC0-1.0",
-  "icon": "assets/modid/icon.png",
+  "icon": "assets/deathlocator/icon.png",
 
   "environment": "*",
   "entrypoints": {
@@ -22,7 +22,7 @@
     ]
   },
   "mixins": [
-    "modid.mixins.json"
+    "deathlocator.mixins.json"
   ],
 
   "depends": {
